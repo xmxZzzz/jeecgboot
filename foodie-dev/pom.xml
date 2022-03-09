@@ -19,7 +19,7 @@
         1、聚合项目里可以分为顶级项目（顶级工程、父工程）与子工程，这两者的关系其实就是父子继承的关系。
         子工程在maven里称之为模块（module），模块之间是平级的，是可以相互依赖的。
         2、子模块可以使用顶级模块工程里所有的资源（依赖），子模块之间如果要使用资源，必须构建依赖（构建关系）
-        3、一个顶级工程师是可以由多个不同的子工程共同组合而成
+        3、一个顶级工程师是可以由多个不同的子工程共同组合而成。
     -->
 
     <!--聚合项目的打包方式为pom-->
@@ -70,13 +70,58 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>8.0.28</version>
         </dependency>
         <!--引入mybatis-->
         <dependency>
             <groupId>org.mybatis.spring.boot</groupId>
             <artifactId>mybatis-spring-boot-starter</artifactId>
-            <version>2.2.0</version>
+            <version>2.1.3</version>
+        </dependency>
+
+        <!--mybatis-generator：通用mapper逆向工具-->
+        <dependency>
+            <groupId>tk.mybatis</groupId>
+            <artifactId>mapper-spring-boot-starter</artifactId>
+            <version>1.2.4</version>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <!--引入Mybatis-Generator插件-->
+            <plugin>
+                <groupId>org.mybatis.generator</groupId>
+                <artifactId>mybatis-generator-maven-plugin</artifactId>
+                <!--版本不能过高-->
+                <version>1.3.7</version>
+                <configuration>
+                    <!--
+                        引入Mybatis-generator的配置文件
+                        注意：多模块时需要使用绝对路径；单模块时可以使用相对路径
+                    -->
+                    <configurationFile>/home/DiskFiles/学习/itspxx/Java架构师体系课：跟随千万级项目从0到100全过程高效成长/code/jeecgboot/foodie-dev/src/main/resources/generatorConfig.xml</configurationFile>
+                    <!--允许MBG将构建消息写入日志中-->
+                    <verbose>true</verbose>
+                    <!--再次运行MBG时，允许覆盖已生成的文件，但是不会覆盖xml文件-->
+                    <overwrite>true</overwrite>
+                </configuration>
+                <!--必须引入mysql驱动-->
+                <dependencies>
+                    <dependency>
+                        <groupId>mysql</groupId>
+                        <artifactId>mysql-connector-java</artifactId>
+                        <version>8.0.28</version>
+                    </dependency>
+                    <!--必须引入tk.mybatis.mapper依赖-->
+                    <dependency>
+                        <groupId>tk.mybatis</groupId>
+                        <artifactId>mapper</artifactId>
+                        <version>4.1.5</version>
+                    </dependency>
+                </dependencies>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
