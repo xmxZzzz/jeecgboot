@@ -75,12 +75,12 @@ public class StuServiceImpl implements StuService {
 
     }
 
-    @Transactional(propagation = Propagation.MANDATORY)
+    @Transactional(propagation = Propagation.NESTED)
     @Override
     public void saveChild() {
         saveChild1();
 
-        int a = 1 / 0;
+        //int a = 1 / 0;
 
         saveChild2();
     }
