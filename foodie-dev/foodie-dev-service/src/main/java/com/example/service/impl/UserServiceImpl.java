@@ -15,7 +15,6 @@ import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
 import java.util.Date;
-import java.util.TimeZone;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -41,7 +40,11 @@ public class UserServiceImpl implements UserService {
     @Override
     public Users createUser(UserBO userBO) {
 
-        TimeZone.setDefault(TimeZone.getTimeZone("GMT+8"));
+        //try {
+        //    Thread.sleep(3500);
+        //} catch (InterruptedException e) {
+        //    e.printStackTrace();
+        //}
 
         Users user = new Users();
         // id:利用idworkder生成的固定16位的字母数字混编的字符串
@@ -75,6 +78,13 @@ public class UserServiceImpl implements UserService {
     @Transactional(propagation = Propagation.SUPPORTS)
     @Override
     public Users queryUserForLogin(String username, String password) {
+
+        //try {
+        //    Thread.sleep(2500);
+        //} catch (InterruptedException e) {
+        //    e.printStackTrace();
+        //}
+
         Example userExample = new Example(Users.class);
         Example.Criteria criteria = userExample.createCriteria();
         // property与User.java中的属性保持一致
