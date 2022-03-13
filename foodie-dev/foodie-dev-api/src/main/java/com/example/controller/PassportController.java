@@ -1,13 +1,20 @@
 package com.example.controller;
 
+import com.example.pojo.Users;
 import com.example.pojo.bo.UserBO;
 import com.example.service.UserService;
+import com.example.utils.CookieUtils;
 import com.example.utils.IMOOCJSONResult;
+import com.example.utils.JsonUtils;
+import com.example.utils.MD5Utils;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 @Api(value = "注册登录", tags = {"用于注册登录的相关接口"})
 @RestController
@@ -59,7 +66,9 @@ public class PassportController {
      */
     @ApiOperation(value = "用户注册", notes = "用户注册", httpMethod = "POST")
     @PostMapping("/regist")
-    public IMOOCJSONResult regist(@RequestBody UserBO userBO) {
+    public IMOOCJSONResult regist(@RequestBody UserBO userBO,
+                                  HttpServletRequest request,
+                                  HttpServletResponse response) {
         String username = userBO.getUsername();
         String pwd = userBO.getPassword();
         String confirmPwd = userBO.getConfirmPassword();
@@ -86,10 +95,61 @@ public class PassportController {
         }
 
         // 4.实现注册
-        userService.createUser(userBO);
+        Users userRes = userService.createUser(userBO);
+
+        //2.将登录用户的信息存入cookie
+        userRes = setNullProperty(userRes);
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userRes), true);
 
         return IMOOCJSONResult.ok();
 
+    }
+
+    @ApiOperation(value = "用户登录", notes = "用户登录", httpMethod = "POST")
+    @PostMapping("/login")
+    public IMOOCJSONResult login(@RequestBody UserBO userBO,
+                                 HttpServletRequest request,
+                                 HttpServletResponse response) throws Exception {
+        String username = userBO.getUsername();
+        String pwd = userBO.getPassword();
+
+        //0.用户名和密码都不能为空
+        if (StringUtils.isBlank(username) || StringUtils.isBlank((pwd))) {
+            return IMOOCJSONResult.errorMsg("用户名或密码不能为空");
+        }
+
+        //1.实现用户登录
+        Users userRes = userService.queryUserForLogin(username, MD5Utils.getMD5Str(pwd));
+
+        if (userRes == null) {
+            return IMOOCJSONResult.errorMsg("用户名或密码不正确");
+        }
+
+        //2.将登录用户的信息存入cookie
+        userRes = setNullProperty(userRes);
+        CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userRes), true);
+
+        return IMOOCJSONResult.ok(userRes);
+    }
+
+    /*
+     * @Method setNullProperty
+     * @Version  1.0
+     * @Description 将需要存入cookie的用户信息中的敏感字段隐藏
+     * @param user
+     * @Return com.example.pojo.Users
+     * @Exception
+     * @Date 2022/3/13 下午5:36
+     */
+    private Users setNullProperty(Users user) {
+        user.setPassword(null);
+        user.setBirthday(null);
+        user.setMobile(null);
+        user.setEmail(null);
+        user.setRealname(null);
+        user.setCreatedTime(null);
+        user.setUpdatedTime(null);
+        return user;
     }
 
 }

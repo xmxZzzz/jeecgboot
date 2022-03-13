@@ -20,4 +20,13 @@ public interface UserService {
      * @return 返回成功创建的用户信息
      */
     Users createUser(UserBO userBO);
+
+    /**
+     * 用户登录
+     *
+     * @param username 用户名
+     * @param password 密码
+     * @return
+     */
+    Users queryUserForLogin(String username, String password);
 }
