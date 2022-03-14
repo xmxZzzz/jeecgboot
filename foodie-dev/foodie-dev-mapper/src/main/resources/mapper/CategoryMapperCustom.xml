@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.CategoryMapperCustom">
+
+    <resultMap id="CategoryCustomMap" type="com.example.pojo.vo.CategoryVO">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="type" property="type"/>
+        <result column="fatherId" property="fatherId"/>
+
+        <!--三级分类信息-->
+        <collection property="subCatList" ofType="com.example.pojo.vo.SubCategoryVO">
+            <id column="subId" property="subId"/>
+            <result column="subName" property="subName"/>
+            <result column="subType" property="subType"/>
+            <result column="subFatherId" property="subFatherId"/>
+        </collection>
+    </resultMap>
+
+    <!--根据指定一级分类id，获取其子类所有信息-->
+    <select id="getSubCatList" resultMap="CategoryCustomMap" parameterType="int">
+    select f.id as id,f.`name` as `name`,f.`type` as `type`,f.father_id as fatherId,
+		c.id as subId,c.`name` as subName,c.`type` as subType,c.father_id as subFatherId
+    from category f
+    left join category c
+    on f.id=c.father_id
+    where f.father_id=#{rootCatId}
+  </select>
+</mapper>
