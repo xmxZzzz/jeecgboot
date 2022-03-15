@@ -4,11 +4,13 @@ import com.example.enums.YesOrNo;
 import com.example.pojo.Carousel;
 import com.example.pojo.Category;
 import com.example.pojo.vo.CategoryVO;
+import com.example.pojo.vo.NewItemsVO;
 import com.example.service.CarouselService;
 import com.example.service.CategoryService;
 import com.example.utils.IMOOCJSONResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -58,11 +60,21 @@ public class IndexController {
 
     @ApiOperation(value = "查询商品子分类", notes = "查询商品子分类", httpMethod = "GET")
     @GetMapping("/subCat/{rootCatId}")
-    public IMOOCJSONResult subCat(@PathVariable Integer rootCatId) {
+    public IMOOCJSONResult subCat(@ApiParam(name = "rootCatId", value = "一级分类ID", required = true) @PathVariable Integer rootCatId) {
         if (rootCatId == null) {
             return IMOOCJSONResult.errorMsg("");
         }
         List<CategoryVO> result = categoryService.getSubCatList(rootCatId);
+        return IMOOCJSONResult.ok(result);
+    }
+
+    @ApiOperation(value = "查询指定一级分类下的最新6条商品数据", notes = "查询指定一级分类下的最新6条商品数据", httpMethod = "GET")
+    @GetMapping("/sixNewItems/{rootCatId}")
+    public IMOOCJSONResult sixNewItems(@ApiParam(name = "rootCatId", value = "一级分类ID", required = true) @PathVariable Integer rootCatId) {
+        if (rootCatId == null) {
+            return IMOOCJSONResult.errorMsg("");
+        }
+        List<NewItemsVO> result = categoryService.getSixNewItemsList(rootCatId);
         return IMOOCJSONResult.ok(result);
     }
 }

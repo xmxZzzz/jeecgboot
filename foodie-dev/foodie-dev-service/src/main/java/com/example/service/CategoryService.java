@@ -2,6 +2,7 @@ package com.example.service;
 
 import com.example.pojo.Category;
 import com.example.pojo.vo.CategoryVO;
+import com.example.pojo.vo.NewItemsVO;
 
 import java.util.List;
 
@@ -20,4 +21,12 @@ public interface CategoryService {
      * @return
      */
     List<CategoryVO> getSubCatList(Integer rootCatId);
+
+    /**
+     * 根据指定一级分类ID获取最新6条商品数据
+     *
+     * @param rootCatId
+     * @return
+     */
+    List<NewItemsVO> getSixNewItemsList(Integer rootCatId);
 }
