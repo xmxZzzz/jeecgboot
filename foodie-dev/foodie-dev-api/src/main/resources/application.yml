@@ -52,3 +52,8 @@ mapper:
   mappers: com.example.my.mapper.MyMapper       # 通用mapper文件MyMapper.java文件的位置
   not-empty: false                              # 在进行数据库操作的时候，判断表达式是否需要追加为“”的情况
   identity: MYSQL                               # 指明使用的数据库为MySql
+
+# pagehelper分页配置
+pagehelper:
+  support-methods-arguments: true
+  helper-dialect: mysql

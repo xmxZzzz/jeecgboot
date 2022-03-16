@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.mapper.ItemsMapperCustom">
+
+    <!--根据指定商品ID查询评价信息-->
+    <select id="queryItemsCommentList" parameterType="Map" resultType="com.example.pojo.vo.ItemCommentsVO">
+        select
+        ic.comment_level as commentLevel,ic.sepc_name as specName,ic.content as content,ic.created_time as createdTIme,
+        u.nickname as nickName,u.face as userFace
+        from items_comments ic
+        left join users u
+        on ic.user_id=u.id
+        where ic.item_id=#{params.itemId}
+        <if test=" params.level != null and params.level != '' ">
+            and ic.comment_level=#{params.level}
+        </if>
+    </select>
+
+</mapper>

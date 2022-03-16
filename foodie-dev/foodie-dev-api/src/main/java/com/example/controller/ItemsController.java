@@ -4,31 +4,32 @@ import com.example.pojo.Items;
 import com.example.pojo.ItemsImg;
 import com.example.pojo.ItemsParam;
 import com.example.pojo.ItemsSpec;
+import com.example.pojo.vo.CommentLevelCountsVO;
 import com.example.pojo.vo.ItemInfoVO;
 import com.example.service.ItemsService;
 import com.example.utils.IMOOCJSONResult;
+import com.example.utils.PagedGridResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @Api(value = "商品详情", tags = {"商品详情相关接口"})
 @RestController
 @RequestMapping("items")
-public class ItemsController {
+public class ItemsController extends BaseController {
 
     @Autowired
     private ItemsService itemsService;
 
     @ApiOperation(value = "商品详情", notes = "商品详情", httpMethod = "GET")
     @GetMapping("/info/{itemId}")
-    public IMOOCJSONResult info(@PathVariable String itemId) {
+    public IMOOCJSONResult info(
+            @ApiParam(name = "itemId", value = "商品ID", required = true) @PathVariable String itemId) {
         if (StringUtils.isBlank(itemId)) {
             return IMOOCJSONResult.errorMsg(null);
         }
@@ -46,5 +47,49 @@ public class ItemsController {
 
         return IMOOCJSONResult.ok(itemInfoVO);
 
+    }
+
+    @ApiOperation(value = "商品评价等级数量", notes = "商品评价等级数量", httpMethod = "GET")
+    @GetMapping("/commentLevel")
+    public IMOOCJSONResult commentLevel(
+            @ApiParam(name = "itemId", value = "商品ID", required = true) @RequestParam String itemId) {
+        if (StringUtils.isBlank(itemId)) {
+            return IMOOCJSONResult.errorMsg(null);
+        }
+        CommentLevelCountsVO commentLevelCountsVO = itemsService.queryCommentCounts(itemId);
+        return IMOOCJSONResult.ok(commentLevelCountsVO);
+    }
+
+
+    @ApiOperation(value = "查询商品评论", notes = "查询商品评论", httpMethod = "GET")
+    @GetMapping("/comments")
+    public IMOOCJSONResult comments(
+            @ApiParam(name = "itemId", value = "商品id", required = true)
+            @RequestParam String itemId,
+            @ApiParam(name = "level", value = "评价等级", required = false)
+            @RequestParam(required = false) Integer level,
+            @ApiParam(name = "page", value = "查询下一页的第几页", required = false)
+            @RequestParam Integer page,
+            @ApiParam(name = "pageSize", value = "分页的每一页显示的条数", required = false)
+            @RequestParam Integer pageSize) {
+
+        if (StringUtils.isBlank(itemId)) {
+            return IMOOCJSONResult.errorMsg(null);
+        }
+
+        if (page == null) {
+            page = 1;
+        }
+
+        if (pageSize == null) {
+            pageSize = COMMON_PAGE_SIZE;
+        }
+
+        PagedGridResult grid = itemsService.queryItemComments(itemId,
+                level,
+                page,
+                pageSize);
+
+        return IMOOCJSONResult.ok(grid);
     }
 }
