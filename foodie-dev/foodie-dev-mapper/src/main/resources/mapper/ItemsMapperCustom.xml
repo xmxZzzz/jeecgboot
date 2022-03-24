@@ -16,4 +16,56 @@
         </if>
     </select>
 
+    <select id="searchItems" parameterType="Map" resultType="com.example.pojo.vo.SearchItemsVO">
+        select
+        i.id as itemId,i.item_name as itemName,i.sell_counts as sellCounts,
+        ii.url as imgUrl,tempSpec.price as price
+        from items i
+        left join items_img ii
+        on i.id=ii.item_id
+        left join (select item_id,min(price_normal) as price from items_spec group by item_id) tempSpec
+        on tempSpec.item_id=i.id
+        where ii.is_main=1
+        <if test="params.keywords!='' and params.keywords!=null">
+            and i.item_name like '%${params.keywords}%'
+        </if>
+        order by
+        <choose>
+            <when test="params.sort==&quot;c&quot;">
+                i.sell_counts desc
+            </when>
+            <when test="params.sort==&quot;p&quot;">
+                tempSpec.price asc
+            </when>
+            <otherwise>
+                i.item_name asc
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="searchItemsByThirdCat" parameterType="Map" resultType="com.example.pojo.vo.SearchItemsVO">
+        select
+        i.id as itemId,i.item_name as itemName,i.sell_counts as sellCounts,
+        ii.url as imgUrl,tempSpec.price as price
+        from items i
+        left join items_img ii
+        on i.id=ii.item_id
+        left join (select item_id,min(price_normal) as price from items_spec group by item_id) tempSpec
+        on tempSpec.item_id=i.id
+        where ii.is_main=1
+        and i.cat_id=#{params.catId}
+        order by
+        <choose>
+            <when test="params.sort==&quot;c&quot;">
+                i.sell_counts desc
+            </when>
+            <when test="params.sort==&quot;p&quot;">
+                tempSpec.price asc
+            </when>
+            <otherwise>
+                i.item_name asc
+            </otherwise>
+        </choose>
+    </select>
+
 </mapper>

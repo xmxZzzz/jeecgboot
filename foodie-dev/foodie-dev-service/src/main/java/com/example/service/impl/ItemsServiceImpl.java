@@ -5,6 +5,7 @@ import com.example.mapper.*;
 import com.example.pojo.*;
 import com.example.pojo.vo.CommentLevelCountsVO;
 import com.example.pojo.vo.ItemCommentsVO;
+import com.example.pojo.vo.SearchItemsVO;
 import com.example.service.ItemsService;
 import com.example.utils.DesensitizationUtil;
 import com.example.utils.PagedGridResult;
@@ -118,6 +119,30 @@ public class ItemsServiceImpl implements ItemsService {
             vo.setNickname(DesensitizationUtil.commonDisplay(vo.getNickname()));
         }
 
+        return setItemComments(list, page);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult searchItems(String keywords, String sort, Integer page, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("keyword", keywords);
+        map.put("sort", sort);
+
+        PageHelper.startPage(page, pageSize);
+        List<SearchItemsVO> list = itemsMapperCustom.searchItems(map);
+        return setItemComments(list, page);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public PagedGridResult searchItemsByThirdCat(Integer catId, String sort, Integer page, Integer pageSize) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("catId", catId);
+        map.put("sort", sort);
+
+        PageHelper.startPage(page, pageSize);
+        List<SearchItemsVO> list = itemsMapperCustom.searchItemsByThirdCat(map);
         return setItemComments(list, page);
     }
 
