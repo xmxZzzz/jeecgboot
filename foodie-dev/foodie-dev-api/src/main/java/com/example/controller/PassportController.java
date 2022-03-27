@@ -101,6 +101,10 @@ public class PassportController {
         userRes = setNullProperty(userRes);
         CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userRes), true);
 
+
+        // TODO 生成用户token，存入redis会话
+        // TODO 同步购物车数据
+
         return IMOOCJSONResult.ok();
 
     }
@@ -125,9 +129,14 @@ public class PassportController {
             return IMOOCJSONResult.errorMsg("用户名或密码不正确");
         }
 
+
         //2.将登录用户的信息存入cookie
         userRes = setNullProperty(userRes);
         CookieUtils.setCookie(request, response, "user", JsonUtils.objectToJson(userRes), true);
+
+
+        // TODO 生成用户token，存入redis会话
+        // TODO 同步购物车数据
 
         return IMOOCJSONResult.ok(userRes);
     }

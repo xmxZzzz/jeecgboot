@@ -6,6 +6,7 @@ import com.example.pojo.ItemsParam;
 import com.example.pojo.ItemsSpec;
 import com.example.pojo.vo.CommentLevelCountsVO;
 import com.example.pojo.vo.ItemInfoVO;
+import com.example.pojo.vo.ShopCartVO;
 import com.example.service.ItemsService;
 import com.example.utils.IMOOCJSONResult;
 import com.example.utils.PagedGridResult;
@@ -128,7 +129,7 @@ public class ItemsController extends BaseController {
     @ApiOperation(value = "通过三级商品分类di搜索商品列表", notes = "通过三级商品分类di搜索商品列表", httpMethod = "GET")
     @GetMapping("/catItems")
     public IMOOCJSONResult catItems(
-            @ApiParam(name = "catId", value = "catId", required = true)
+            @ApiParam(name = "catId", value = "三级分类id", required = true)
             @RequestParam Integer catId,
             @ApiParam(name = "sort", value = "排序方式", required = false)
             @RequestParam(required = false) String sort,
@@ -155,5 +156,20 @@ public class ItemsController extends BaseController {
                 pageSize);
 
         return IMOOCJSONResult.ok(grid);
+    }
+
+    @ApiOperation(value = "根据商品规格ids更新购物车中商品最新信息", notes = "根据商品规格ids更新购物车中商品最新信息", httpMethod = "GET")
+    @GetMapping("/refresh")
+    public IMOOCJSONResult refresh(
+            @ApiParam(name = "itemSpecIds", value = "商品规格ids", required = true, example = "1,3,5")
+            @RequestParam String itemSpecIds) {
+        if (StringUtils.isBlank(itemSpecIds)) {
+            return IMOOCJSONResult.ok();
+        }
+
+        List<ShopCartVO> list = itemsService.queryItemsBySpecIds(itemSpecIds);
+
+        return IMOOCJSONResult.ok(list);
+
     }
 }

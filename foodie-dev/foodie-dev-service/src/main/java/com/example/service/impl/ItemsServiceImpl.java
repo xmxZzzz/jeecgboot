@@ -6,6 +6,7 @@ import com.example.pojo.*;
 import com.example.pojo.vo.CommentLevelCountsVO;
 import com.example.pojo.vo.ItemCommentsVO;
 import com.example.pojo.vo.SearchItemsVO;
+import com.example.pojo.vo.ShopCartVO;
 import com.example.service.ItemsService;
 import com.example.utils.DesensitizationUtil;
 import com.example.utils.PagedGridResult;
@@ -17,9 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import tk.mybatis.mapper.entity.Example;
 
 import javax.annotation.Resource;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @Package: com.example.service.impl
@@ -158,5 +157,14 @@ public class ItemsServiceImpl implements ItemsService {
         // 总评价信息数量
         grid.setRecords(info.getTotal());
         return grid;
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS)
+    @Override
+    public List<ShopCartVO> queryItemsBySpecIds(String specIds) {
+        String[] ids = specIds.split(",");
+        List<String> specIdsList = new ArrayList<>();
+        Collections.addAll(specIdsList, ids);
+        return itemsMapperCustom.queryItemsBySpecIds(specIdsList);
     }
 }
